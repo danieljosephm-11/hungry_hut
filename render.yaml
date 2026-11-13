@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: hungry-hut-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
