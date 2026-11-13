@@ -2,6 +2,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import {
   adminOverview,
@@ -16,6 +18,7 @@ dotenv.config()
 
 const app = express()
 const port = Number(process.env.PORT ?? 4000)
+const clientDistPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../client/dist')
 
 app.use(cors())
 app.use(express.json())
@@ -110,6 +113,18 @@ app.post('/api/payments/create', (req, res) => {
 
 app.post('/api/payments/verify', (_req, res) => {
   res.json({ verified: true, status: 'captured' })
+})
+
+app.use(express.static(clientDistPath))
+app.use((req, res, next) => {
+  if (req.method !== 'GET' || req.path === '/api' || req.path.startsWith('/api/')) {
+    next()
+    return
+  }
+
+  res.sendFile(resolve(clientDistPath, 'index.html'), (error) => {
+    if (error) next(error)
+  })
 })
 
 app.listen(port, () => {

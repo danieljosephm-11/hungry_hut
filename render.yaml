@@ -3,7 +3,9 @@ services:
     name: hungry-hut-api
     runtime: node
     plan: free
-    rootDir: server
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: npm ci --prefix client && npm run build --prefix client && npm ci --prefix server && npm run build --prefix server
+    startCommand: npm start --prefix server
     healthCheckPath: /api/health
+    envVars:
+      - key: VITE_API_URL
+        value: /api
